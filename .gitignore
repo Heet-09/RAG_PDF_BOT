@@ -1,0 +1,43 @@
+# Python cache and compiled files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+.env
+.env.*
+linv/
+pyvenv.cfg
+
+# IDE/editor directories
+.vscode/
+.idea/
+
+# Distribution/build
+build/
+dist/
+*.egg-info/
+
+# Chroma DB and uploads
+chroma_db/
+uploads/
+collections.json
+
+# Database files
+*.sqlite3
+*.db
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Test/cache
+.pytest_cache/
+
+# Misc
+*.bak
+*.swp

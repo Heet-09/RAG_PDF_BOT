@@ -1,0 +1,133 @@
+:root {
+  --bg: #0b0f19;
+  --panel: #111827;
+  --border: #1f2937;
+  --text: #e5e7eb;
+  --muted: #9ca3af;
+  --user: #4f46e5;
+  --assistant: #111827;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Inter, system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ===== Top Bar ===== */
+.topbar {
+  height: 64px;
+  background: #020617;
+  border-bottom: 1px solid var(--border);
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.upload-box {
+  display: flex;
+  gap: 10px;
+}
+
+.upload-box input {
+  color: var(--muted);
+}
+
+.upload-box button {
+  background: var(--user);
+  border: none;
+  color: white;
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* ===== Chat Area ===== */
+.chat-wrapper {
+  flex: 1;
+  overflow: hidden;
+}
+
+.chat-container {
+  height: 100%;
+  overflow-y: auto;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* ===== Messages ===== */
+.message {
+  max-width: 80%;
+  padding: 14px 16px;
+  border-radius: 14px;
+  font-size: 14px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+.message.user {
+  background: var(--user);
+  color: white;
+  align-self: flex-end;
+  border-bottom-right-radius: 4px;
+}
+
+.message.assistant {
+  background: var(--assistant);
+  border: 1px solid var(--border);
+  align-self: flex-start;
+  border-bottom-left-radius: 4px;
+}
+
+/* ===== Input Bar ===== */
+.chat-input-bar {
+  background: #020617;
+  border-top: 1px solid var(--border);
+  padding: 14px;
+  display: flex;
+  gap: 10px;
+}
+
+.chat-input-bar select,
+.chat-input-bar input {
+  background: #020617;
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 10px;
+  padding: 12px;
+  font-size: 14px;
+}
+
+.chat-input-bar select {
+  width: 220px;
+}
+
+.chat-input-bar input {
+  flex: 1;
+}
+
+.chat-input-bar button {
+  background: var(--user);
+  border: none;
+  color: white;
+  padding: 0 18px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 16px;
+}

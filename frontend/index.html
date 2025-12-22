@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>PDF AI Chat</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- Top Bar -->
+  <header class="topbar">
+    <div class="logo">📄 PDF AI Chat</div>
+
+    <div class="upload-box">
+      <input type="file" id="pdfUpload" />
+      <button onclick="uploadPDF()">Upload PDF</button>
+    </div>
+  </header>
+
+  <!-- Main Chat Area -->
+  <main class="chat-wrapper">
+    <div id="chatContainer" class="chat-container">
+      <div class="message assistant">
+        Hi 👋  
+        Upload a PDF and start asking questions from it.
+      </div>
+    </div>
+  </main>
+
+  <!-- Bottom Input -->
+  <footer class="chat-input-bar">
+    <select id="pdfSelect"></select>
+
+    <input
+      type="text"
+      id="question"
+      placeholder="Ask something from the document…"
+      onkeydown="if(event.key==='Enter') askQuestion()"
+    />
+
+    <button onclick="askQuestion()">➤</button>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
