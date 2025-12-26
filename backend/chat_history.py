@@ -12,30 +12,50 @@ model = ChatGroq(
     max_retries=3,
 )
 
-def get_or_create_conversation(collection: str) -> int:
+import json
+
+def get_or_create_conversation(user_id: int, collections: list[str]) -> int:
+    pdf_json = json.dumps(sorted(collections))
+
     db = SessionLocal()
-    convo = db.query(Conversation).filter_by(collection=collection).first()
+    try:
+        convo = (
+            db.query(Conversation)
+            .filter(
+                Conversation.user_id == user_id,
+                Conversation.pdf_names == pdf_json
+            )
+            .with_for_update()
+            .first()
+        )
 
-    if not convo:
-        convo = Conversation(collection=collection)
-        db.add(convo)
-        db.commit()
-        db.refresh(convo)
+        if not convo:
+            convo = Conversation(
+                user_id=user_id,
+                pdf_names=pdf_json
+            )
+            db.add(convo)
+            db.commit()
+            db.refresh(convo)
 
-    db.close()
-    return convo.id
+        return convo.id
+    finally:
+        db.close()
+
+
 
 
 def save_message(conversation_id: int, role: str, content: str):
     db = SessionLocal()
-    msg = Message(
-        conversation_id=conversation_id,
-        role=role,
-        content=content
-    )
-    db.add(msg)
-    db.commit()
-    db.close()
+    try:
+        db.add(Message(
+            conversation_id=conversation_id,
+            role=role,
+            content=content
+        ))
+        db.commit()
+    finally:
+        db.close()
 
 
 def get_langchain_messages(conversation_id: int, limit: int = 6):
@@ -77,7 +97,6 @@ def save_summary(conversation_id, summary):
     db.commit()
     db.close()
 
-
 def maybe_update_summary(conversation_id):
     history = get_langchain_messages(conversation_id, limit=12)
 
@@ -85,17 +104,9 @@ def maybe_update_summary(conversation_id):
         return
 
     prompt = f"""
-        Summarize the entire agreement discussed so far,
-        including:
-        - parties
-        - purpose
-        - trademark licence
-        - obligations
-        - royalties
-        - termination
-        - dispute resolution
+    Summarize the agreement discussed so far.
+    {history}
+    """
 
-        {history}
-        """
-
-
+    response = model.invoke(prompt)
+    save_summary(conversation_id, response.content)

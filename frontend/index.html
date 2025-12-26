@@ -10,27 +10,56 @@
   <!-- Top Bar -->
   <header class="topbar">
     <div class="logo">📄 PDF AI Chat</div>
-
-    <div class="upload-box">
-      <input type="file" id="pdfUpload" />
-      <button onclick="uploadPDF()">Upload PDF</button>
-    </div>
+    <button class="logout-btn" onclick="logout()">Logout</button>
   </header>
 
   <!-- Main Chat Area -->
   <main class="chat-wrapper">
-    <div id="chatContainer" class="chat-container">
-      <div class="message assistant">
-        Hi 👋  
-        Upload a PDF and start asking questions from it.
+    <!-- Sidebar -->
+    <aside class="conversation-list">
+      <div class="sidebar-header">
+        <h4>Your Chats</h4>
+        <button class="new-chat-btn" onclick="startNewChat()">➕ New Chat</button>
       </div>
-    </div>
+
+      <div id="conversationList"></div>
+    </aside>
+
+
+    <!-- Chat -->
+    <section class="chat-section">
+      <div class="active-user" id="activeUser"></div>
+
+      <div id="chatContainer" class="chat-container">
+        <div class="message assistant">
+          Hi 👋  
+          Upload a PDF and start asking questions from it.
+        </div>
+      </div>
+    </section>
   </main>
 
-  <!-- Bottom Input -->
-  <footer class="chat-input-bar">
-    <select id="pdfSelect"></select>
 
+  <footer class="chat-input-bar">
+
+    <!-- PDF Selector -->
+    <div class="pdf-select-box">
+      <div class="pdf-select-header">
+        📄 PDFs <span>Select up to 3</span>
+      </div>
+      <select id="pdfSelect" multiple></select>
+    </div>
+
+    <!-- Upload -->
+    <div class="upload-inline">
+      <input type="file" id="pdfUpload" hidden />
+      <button onclick="document.getElementById('pdfUpload').click()">
+        Choose PDF
+      </button>
+      <button class="upload-btn" onclick="uploadPDF()">Upload</button>
+    </div>
+
+    <!-- Chat Input -->
     <input
       type="text"
       id="question"
@@ -38,9 +67,16 @@
       onkeydown="if(event.key==='Enter') askQuestion()"
     />
 
-    <button onclick="askQuestion()">➤</button>
+    <button class="send-btn" onclick="askQuestion()">➤</button>
+
   </footer>
 
   <script src="script.js"></script>
+  <script>
+  if (!localStorage.getItem("user_id")) {
+    window.location.href = "login.html";
+  }
+</script>
+
 </body>
 </html>
