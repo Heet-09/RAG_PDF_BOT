@@ -1,4 +1,4 @@
-const API = "http://localhost:8088";
+const API = "http://localhost:5454";
 
 const chat = document.getElementById("chatContainer");
 

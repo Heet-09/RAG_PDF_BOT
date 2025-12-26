@@ -8,7 +8,8 @@ import os
 from chat_history import (
     get_or_create_conversation,
     save_message,
-    get_langchain_messages
+    get_langchain_messages,
+    maybe_update_summary,
 )
 
 
@@ -31,8 +32,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Mount static files (frontend) at /static
-app.mount("/static", StaticFiles(directory="../frontend"), name="frontend")
 
 @app.post("/upload")
 async def upload_pdf(file: UploadFile = File(...)):
@@ -77,28 +76,27 @@ def ask(data: dict):
     question = data["question"]
 
     conversation_id = get_or_create_conversation(collection)
-
-    # Save user message
     save_message(conversation_id, "user", question)
 
     def stream():
         full_answer = ""
-
         history = get_langchain_messages(conversation_id)
 
-        for chunk in ask_question_stream(
-            collection,
-            question,
-            history
-        ):
-            full_answer += chunk
-            yield chunk
-
-        # Save assistant reply
-        save_message(conversation_id, "assistant", full_answer)
+        try:
+            for chunk in ask_question_stream(
+                collection,
+                question,
+                history,
+                conversation_id
+            ):
+                full_answer += chunk
+                yield chunk
+        finally:
+            if full_answer.strip():
+                save_message(conversation_id, "assistant", full_answer)
+                maybe_update_summary(conversation_id)
 
     return StreamingResponse(stream(), media_type="text/plain")
-
 
 
 @app.get("/api/health")

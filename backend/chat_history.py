@@ -1,5 +1,16 @@
 from db import SessionLocal
 from models import Conversation, Message
+from langchain_groq import ChatGroq
+from dotenv import load_dotenv
+from sqlalchemy import text
+
+load_dotenv()
+
+model = ChatGroq(
+    model="openai/gpt-oss-120b",
+    temperature=0.7,
+    max_retries=3,
+)
 
 def get_or_create_conversation(collection: str) -> int:
     db = SessionLocal()
@@ -27,7 +38,7 @@ def save_message(conversation_id: int, role: str, content: str):
     db.close()
 
 
-def get_langchain_messages(conversation_id: int, limit: int = 10):
+def get_langchain_messages(conversation_id: int, limit: int = 6):
     db = SessionLocal()
     messages = (
         db.query(Message)
@@ -40,3 +51,51 @@ def get_langchain_messages(conversation_id: int, limit: int = 10):
 
     messages.reverse()
     return [{"role": m.role, "content": m.content} for m in messages]
+
+
+def get_summary(conversation_id):
+    db = SessionLocal()
+    row = db.execute(
+        text("SELECT summary FROM conversation_summaries WHERE conversation_id = :id"),
+        {"id": conversation_id}
+    ).fetchone()
+
+    db.close()
+    return row[0] if row else None
+
+
+def save_summary(conversation_id, summary):
+    db = SessionLocal()
+    db.execute(
+        """
+        INSERT INTO conversation_summaries (conversation_id, summary)
+        VALUES (:id, :summary)
+        ON DUPLICATE KEY UPDATE summary=:summary
+        """,
+        {"id": conversation_id, "summary": summary}
+    )
+    db.commit()
+    db.close()
+
+
+def maybe_update_summary(conversation_id):
+    history = get_langchain_messages(conversation_id, limit=12)
+
+    if len(history) < 12:
+        return
+
+    prompt = f"""
+        Summarize the entire agreement discussed so far,
+        including:
+        - parties
+        - purpose
+        - trademark licence
+        - obligations
+        - royalties
+        - termination
+        - dispute resolution
+
+        {history}
+        """
+
+
