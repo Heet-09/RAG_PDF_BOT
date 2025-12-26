@@ -1,4 +1,4 @@
-const API = "http://localhost:8080";
+const API = "http://localhost:8088";
 
 const chat = document.getElementById("chatContainer");
 
@@ -8,6 +8,16 @@ function addMessage(text, type) {
   msg.textContent = text;
   chat.appendChild(msg);
   chat.scrollTop = chat.scrollHeight;
+  return msg;
+}
+
+function addTypingIndicator() {
+  const msg = document.createElement("div");
+  msg.className = "message assistant typing";
+  msg.textContent = "...";
+  chat.appendChild(msg);
+  chat.scrollTop = chat.scrollHeight;
+  return msg;
 }
 
 async function uploadPDF() {
@@ -53,18 +63,18 @@ async function askQuestion() {
   addMessage(question, "user");
   input.value = "";
 
-  // Assistant bubble
-  const botMsg = document.createElement("div");
-  botMsg.className = "message assistant";
-  botMsg.textContent = "";
-  chat.appendChild(botMsg);
-  chat.scrollTop = chat.scrollHeight;
+  // Show typing indicator
+  const typingMsg = addTypingIndicator();
 
   const response = await fetch(`${API}/ask`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ collection, question })
   });
+
+  // Replace typing indicator with real assistant message
+  typingMsg.innerHTML = "";
+  typingMsg.classList.remove("typing");
 
   const reader = response.body.getReader();
   const decoder = new TextDecoder();
@@ -73,8 +83,7 @@ async function askQuestion() {
     const { value, done } = await reader.read();
     if (done) break;
 
-    const chunk = decoder.decode(value);
-    botMsg.textContent += chunk;
+    typingMsg.textContent += decoder.decode(value);
     chat.scrollTop = chat.scrollHeight;
   }
 }

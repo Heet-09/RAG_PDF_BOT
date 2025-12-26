@@ -8,6 +8,7 @@ from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_groq import ChatGroq
 from langchain_core.messages import SystemMessage
+from langchain_experimental.text_splitter import SemanticChunker
 
 load_dotenv()
 
@@ -67,28 +68,34 @@ def collection_name_from_filename(filename):
 
 def build_collection(file_path, collection_name):
     print(f"📦 [CHROMA] Building collection: {collection_name}")
-    print(f"📄 [CHROMA] Loading PDF: {file_path}")
 
     loader = PyPDFLoader(file_path)
     pages = loader.load()
-    print(f"📄 [CHROMA] Loaded {len(pages)} pages")
+    print(f"📄 Loaded {len(pages)} pages")
 
-    splitter = RecursiveCharacterTextSplitter(
-        chunk_size=800,
-        chunk_overlap=50,
+    embeddings = get_embeddings()
+
+#     splitter = RecursiveCharacterTextSplitter(
+#         chunk_size=800,
+#         chunk_overlap=50,
+#     )
+    splitter = SemanticChunker(
+        embeddings,
+        breakpoint_threshold_type="percentile",
+        breakpoint_threshold_amount=97,  # legal-doc optimized
     )
 
     chunks = splitter.split_documents(pages)
-    print(f"✂️ [CHROMA] Split into {len(chunks)} chunks")
+    print(f"✂️ Created {len(chunks)} semantic legal chunks")
 
     db = Chroma(
         persist_directory=DB_PATH,
         collection_name=collection_name,
-        embedding_function=get_embeddings(),
+        embedding_function=embeddings,
     )
 
     db.add_documents(chunks)
-    print("✅ [CHROMA] Documents added to Chroma DB")
+    print("✅ Legal document indexed successfully")
 
 def load_collection(collection_name):
     print(f"📂 [CHROMA] Loading collection: {collection_name}")
@@ -99,74 +106,55 @@ def load_collection(collection_name):
         embedding_function=get_embeddings(),
     )
 
-# def ask_question(collection_name, query):
-#     print("❓ [RAG] Starting question answering")
-#     print(f"📄 [RAG] Collection: {collection_name}")
-#     print(f"❓ [RAG] Query: {query}")
 
-#     db = load_collection(collection_name)
+from langchain_core.messages import (
+    SystemMessage, HumanMessage, AIMessage
+)
 
-#     docs = db.similarity_search(query, k=3)
-#     print(f"🔍 [RAG] Retrieved {len(docs)} documents")
+def ask_question_stream(collection_names, query, history):
+    # Support both single collection (string) and multiple collections (list)
+    if isinstance(collection_names, str):
+        collection_names = [collection_names]
+    
+    print(f"🔍 [ASK] Searching {len(collection_names)} collection(s): {collection_names}")
+    
+    all_docs = []
+    for collection_name in collection_names:
+        db = load_collection(collection_name)
+        docs = db.similarity_search(query, k=3)
+        all_docs.extend(docs)
+        print(f"   📄 Found {len(docs)} docs in {collection_name}")
+    
+    # Remove duplicates while preserving order
+    seen = set()
+    unique_docs = []
+    for doc in all_docs:
+        content_hash = hash(doc.page_content)
+        if content_hash not in seen:
+            seen.add(content_hash)
+            unique_docs.append(doc)
+    
+    print(f"✂️ [ASK] Total unique docs: {len(unique_docs)}")
+    context = "\n\n".join(d.page_content for d in unique_docs[:10])
 
-#     if not docs:
-#         print("⚠️ [RAG] No relevant documents found")
-#         return "No relevant information found."
-
-#     context = "\n\n".join(
-#         f"[Page {d.metadata.get('page')}]\n{d.page_content}"
-#         for d in docs
-#     )
-
-#     print("🧠 [RAG] Context constructed")
-
-#     prompt = f"""
-# You are a helpful assistant.
-# Answer ONLY from the context below.
-# If not present, say the information is not available.
-
-# CONTEXT:
-# {context}
-
-# QUESTION:
-# {query}
-# """
-
-#     print("🤖 [RAG] Sending prompt to LLM")
-#     response = model.invoke([SystemMessage(content=prompt)])
-
-#     print("✅ [RAG] LLM response received")
-#     return response.content
-
-def ask_question_stream(collection_name, query):
-    print("🧠 [RAG-STREAM] Starting streaming RAG")
-
-    db = load_collection(collection_name)
-    docs = db.similarity_search(query, k=3)
-
-    if not docs:
-        yield "No relevant information found."
-        return
-
-    context = "\n\n".join(
-        f"[Page {d.metadata.get('page')}]\n{d.page_content}"
-        for d in docs
-    )
-
-    prompt = f"""
+    system_prompt = f"""
 You are a helpful assistant.
 Answer ONLY from the context below.
-If not present, say the information is not available.
 
 CONTEXT:
 {context}
-
-QUESTION:
-{query}
 """
 
-    print("🤖 [RAG-STREAM] Sending prompt to LLM")
+    messages = [SystemMessage(content=system_prompt)]
 
-    for chunk in model.stream([SystemMessage(content=prompt)]):
+    for m in history:
+        if m["role"] == "user":
+            messages.append(HumanMessage(content=m["content"]))
+        elif m["role"] == "assistant":
+            messages.append(AIMessage(content=m["content"]))
+
+    messages.append(HumanMessage(content=query))
+
+    for chunk in model.stream(messages):
         if chunk.content:
             yield chunk.content

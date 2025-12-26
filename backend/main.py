@@ -1,9 +1,16 @@
 from fastapi import FastAPI, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import StreamingResponse
+from fastapi.responses import StreamingResponse, FileResponse
 import shutil
 import os
+
+from chat_history import (
+    get_or_create_conversation,
+    save_message,
+    get_langchain_messages
+)
+
 
 from rag import (
     build_collection,
@@ -23,6 +30,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Mount static files (frontend) at /static
+app.mount("/static", StaticFiles(directory="../frontend"), name="frontend")
 
 @app.post("/upload")
 async def upload_pdf(file: UploadFile = File(...)):
@@ -63,18 +73,29 @@ def get_collections():
 
 @app.post("/ask")
 def ask(data: dict):
-    print("❓ [ASK-STREAM] Streaming request received")
     collection = data["collection"]
     question = data["question"]
 
-    def stream():
-        print("🔄 [STREAM] Generator started")
+    conversation_id = get_or_create_conversation(collection)
 
-        for chunk in ask_question_stream(collection, question):
-            print("➡️ [STREAM] Sending chunk:", chunk)
+    # Save user message
+    save_message(conversation_id, "user", question)
+
+    def stream():
+        full_answer = ""
+
+        history = get_langchain_messages(conversation_id)
+
+        for chunk in ask_question_stream(
+            collection,
+            question,
+            history
+        ):
+            full_answer += chunk
             yield chunk
 
-        print("✅ [STREAM] Completed")
+        # Save assistant reply
+        save_message(conversation_id, "assistant", full_answer)
 
     return StreamingResponse(stream(), media_type="text/plain")
 
