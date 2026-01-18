@@ -41,3 +41,11 @@ Thumbs.db
 # Misc
 *.bak
 *.swp
+
+#planning
+app_production_plan.md
+reason_for_stopping.md
+rag_production_ready.md
+
+#evaluation
+evaluation/

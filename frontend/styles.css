@@ -82,7 +82,7 @@ body {
 }
 
 .chat-input-bar {
-  height: 110px;                /* 🔥 IMPORTANT */
+  height: 160px;                /* 🔥 IMPORTANT */
   background: #020617;
   border-top: 1px solid var(--border);
   padding: 16px;
@@ -206,7 +206,8 @@ body {
 }
 
 #pdfSelect {
-  flex: 1;                      /* 🔥 fills remaining height */
+  flex: 1;     
+                   /* 🔥 fills remaining height */
   background: #020617;
   border: none;
   color: var(--text);

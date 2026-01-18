@@ -1,26 +1,26 @@
+# backend/main.py
 from fastapi import FastAPI, UploadFile, File, Header
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import StreamingResponse, FileResponse
 from fastapi import HTTPException
-from db import SessionLocal
 from models import User
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy import desc
-from models import Conversation, Message
 from fastapi import Header
-from db import SessionLocal
 import json
 import shutil
 import os
 
+
+from models import UserPDF,Conversation, Message
+from db import SessionLocal
 from chat_history import (
     get_or_create_conversation,
     save_message,
     get_langchain_messages,
     maybe_update_summary,
 )
-
 
 from rag import (
     build_collection,
@@ -43,42 +43,54 @@ app.add_middleware(
 
 
 @app.post("/upload")
-async def upload_pdf(file: UploadFile = File(...)):
-    print("📥 [UPLOAD] Request received")
-    print(f"📄 [UPLOAD] Filename: {file.filename}")
-
+async def upload_pdf(
+    file: UploadFile = File(...),
+    x_user_id: int = Header(...)
+):
     file_path = os.path.join(UPLOAD_DIR, file.filename)
-    print(f"📂 [UPLOAD] Saving file to: {file_path}")
 
     with open(file_path, "wb") as f:
         shutil.copyfileobj(file.file, f)
 
-    print("✅ [UPLOAD] File saved successfully")
-
-    collection = collection_name_from_filename(file.filename)
-    print(f"🧠 [UPLOAD] Generated collection name: {collection}")
+    collection = collection_name_from_filename(
+        f"{x_user_id}_{file.filename}"
+    )
 
     build_collection(file_path, collection)
-    print("📦 [UPLOAD] Chroma collection built")
 
-    mapping = load_mapping()
-    mapping[collection] = file.filename
-    save_mapping(mapping)
+    db = SessionLocal()
+    pdf = UserPDF(
+        user_id=x_user_id,
+        collection_name=collection,
+        filename=file.filename
+    )
+    db.add(pdf)
+    db.commit()
+    db.close()
 
-    print("🗂️ [UPLOAD] collections.json updated")
-    print("🎉 [UPLOAD] PDF indexing completed")
-    print(f"🗂️ [UPLOAD] Collection '{collection}' mapped to '{file.filename}'")
-
-
-    return {"message": "PDF indexed", "collection": collection}
+    return {
+        "message": "PDF indexed",
+        "collection": collection
+    }
 
 
 @app.get("/collections")
-def get_collections():
-    print("📚 [COLLECTIONS] Fetching all collections")
-    mapping = load_mapping()
-    print(f"📚 [COLLECTIONS] Found {len(mapping)} collections")
-    return mapping
+def get_collections(x_user_id: int = Header(...)):
+    db = SessionLocal()
+
+    pdfs = (
+        db.query(UserPDF)
+        .filter(UserPDF.user_id == x_user_id)
+        .all()
+    )
+
+    result = {
+        pdf.collection_name: pdf.filename
+        for pdf in pdfs
+    }
+
+    db.close()
+    return result
 
 @app.post("/ask")
 def ask(data: dict, x_user_id: int = Header(...)):

@@ -1,3 +1,4 @@
+// frontend/script.js
 const API = "http://localhost:5555";
 
 const chat = document.getElementById("chatContainer");
@@ -27,7 +28,7 @@ function addTypingIndicator() {
   chat.appendChild(msg);
   chat.scrollTop = chat.scrollHeight;
   return msg;
-} 
+}
 
 async function uploadPDF() {
   const file = document.getElementById("pdfUpload").files[0];

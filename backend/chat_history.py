@@ -1,3 +1,4 @@
+# backend/chat_history.py
 from db import SessionLocal
 from models import Conversation, Message
 from langchain_groq import ChatGroq
