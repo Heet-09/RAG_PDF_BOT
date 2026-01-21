@@ -1,6 +1,6 @@
 only show the pdf uploaded by the user ✅
 pdf selection ko thoda bada karna hai ✅
-woh three dot dikhana hai
+woh three dot dikhana hai ✅
 google sign in+ auth0
 api limit
 authoriztion and authentication

@@ -23,8 +23,14 @@ function addMessage(text, type) {
 
 function addTypingIndicator() {
   const msg = document.createElement("div");
-  msg.className = "message assistant typing";
-  msg.textContent = "...";
+  msg.className = "message assistant loading";
+  msg.innerHTML = `
+    <span class="dots">
+      <span></span>
+      <span></span>
+      <span></span>
+    </span>
+  `;
   chat.appendChild(msg);
   chat.scrollTop = chat.scrollHeight;
   return msg;
@@ -78,21 +84,19 @@ async function askQuestion() {
       ? ACTIVE_CONVERSATION_PDFS
       : Array.from(select.selectedOptions).map(o => o.value);
 
-
   if (collections.length === 0 || collections.length > 3) {
     alert("Please select up to 3 PDFs");
     return;
   }
+
   const input = document.getElementById("question");
   const question = input.value.trim();
-
   if (!question) return;
-
 
   addMessage(question, "user");
   input.value = "";
 
-  // Show typing indicator
+  // Create typing indicator
   const typingMsg = addTypingIndicator();
 
   const response = await fetch(`${API}/ask`, {
@@ -101,30 +105,35 @@ async function askQuestion() {
       "Content-Type": "application/json",
       "X-User-Id": CURRENT_USER_ID
     },
-
     body: JSON.stringify({
-      collections: collections,
-      question: question,
+      collections,
+      question,
       conversation_id: ACTIVE_CONVERSATION_ID
     })
-
   });
 
-  // Replace typing indicator with real assistant message
-  typingMsg.innerHTML = "";
-  typingMsg.classList.remove("typing");
-
+  //  Prepare streaming
   const reader = response.body.getReader();
   const decoder = new TextDecoder();
+  let firstChunk = true;
 
+  // Stream response
   while (true) {
     const { value, done } = await reader.read();
     if (done) break;
+
+    // Remove dots ONLY ON FIRST TOKEN
+    if (firstChunk) {
+      typingMsg.classList.remove("loading");
+      typingMsg.innerHTML = "";
+      firstChunk = false;
+    }
 
     typingMsg.textContent += decoder.decode(value);
     chat.scrollTop = chat.scrollHeight;
   }
 }
+
 
 function logout() {
   localStorage.clear();
