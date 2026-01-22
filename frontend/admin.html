@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Jolly Admin Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#135bec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101622",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
+<div class="flex min-h-screen overflow-hidden">
+<!-- Sidebar Navigation -->
+<aside class="w-64 flex-shrink-0 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-background-dark flex flex-col">
+<div class="p-6 flex items-center gap-3">
+<div class="bg-primary size-10 rounded-lg flex items-center justify-center text-white shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined">gavel</span>
+</div>
+<div>
+<h1 class="text-lg font-bold leading-none">Jolly Admin</h1>
+<p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Legal AI Platform</p>
+</div>
+</div>
+<nav class="flex-1 px-4 space-y-1 mt-4">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary text-white font-medium transition-all" href="#">
+<span class="material-symbols-outlined text-[22px]">dashboard</span>
+<span class="text-sm">Overview</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white transition-all" href="#">
+<span class="material-symbols-outlined text-[22px]">group</span>
+<span class="text-sm">Users</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white transition-all" href="#">
+<span class="material-symbols-outlined text-[22px]">description</span>
+<span class="text-sm">Documents</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white transition-all" href="#">
+<span class="material-symbols-outlined text-[22px]">bar_chart</span>
+<span class="text-sm">Analytics</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white transition-all" href="#">
+<span class="material-symbols-outlined text-[22px]">settings</span>
+<span class="text-sm">System Settings</span>
+</a>
+</nav>
+<div class="p-4 border-t border-slate-200 dark:border-slate-800">
+<div class="flex items-center gap-3 p-2 rounded-lg bg-slate-100 dark:bg-slate-800/50">
+<div class="size-8 rounded-full bg-cover bg-center" data-alt="Portrait of the system administrator" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAQuJms3qLEbuXarYZChHg5DtLu-HkZV850bVLGUQO6bwqKsznZyBLeqxmxjIVa1NtlFOviF3x5bpEleJcHWGZyqebn0mDI28F9sTJoj_bRl6xgGn2YVa5B6xPxVvxbmKELVKZVNL5tsbo4BOzXWZT2JSoh65iE38z69VI8S0T3SJdhc6TAlntc1ReCH2SpIcPUIdc_kNph7c3-LSsVG_zoLQzhU_1gUPS8jL1yq1oHKu5i63FgIbQr1VKVom62ODW5aOMNopdKHRA")'></div>
+<div class="flex-1 min-w-0">
+<p class="text-xs font-semibold truncate">Alex Rivera</p>
+<p class="text-[10px] text-slate-500 truncate">Platform Admin</p>
+</div>
+<span class="material-symbols-outlined text-slate-400 text-sm">more_vert</span>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col overflow-y-auto">
+<!-- Top Navigation Bar -->
+<header class="h-16 border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md sticky top-0 z-10 flex items-center justify-between px-8">
+<div class="flex items-center gap-4 flex-1">
+<div class="relative max-w-md w-full">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xl">search</span>
+<input class="w-full bg-slate-100 dark:bg-slate-800/50 border-none rounded-lg py-2 pl-10 pr-4 text-sm focus:ring-2 focus:ring-primary/50 transition-all placeholder:text-slate-500" placeholder="Search contracts, users or logs..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="size-10 rounded-lg flex items-center justify-center text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 size-2 bg-red-500 rounded-full border-2 border-white dark:border-background-dark"></span>
+</button>
+<button class="size-10 rounded-lg flex items-center justify-center text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">
+<span class="material-symbols-outlined">help_outline</span>
+</button>
+<div class="h-6 w-px bg-slate-200 dark:border-slate-800 mx-2"></div>
+<div class="flex items-center gap-2 px-2 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800">
+<span class="text-xs font-medium">Platform Status:</span>
+<span class="flex items-center gap-1.5 text-[10px] uppercase tracking-wider font-bold text-emerald-500">
+<span class="size-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                            Operational
+                        </span>
+</div>
+</div>
+</header>
+<div class="p-8 space-y-8 max-w-[1400px] mx-auto w-full">
+<!-- Header Section -->
+<div class="flex items-end justify-between">
+<div>
+<h2 class="text-2xl font-bold tracking-tight">Executive Dashboard</h2>
+<p class="text-slate-500 dark:text-slate-400 mt-1">Real-time overview of Jolly's AI activity and user growth.</p>
+</div>
+<div class="flex gap-2">
+<button class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-all flex items-center gap-2">
+<span class="material-symbols-outlined text-lg">calendar_today</span>
+                            Last 30 Days
+                        </button>
+<button class="bg-primary text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary/90 transition-all flex items-center gap-2 shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined text-lg">download</span>
+                            Export Report
+                        </button>
+</div>
+</div>
+<!-- Metrics Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+<div class="bg-white dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 p-6 rounded-xl hover:shadow-lg transition-all group">
+<div class="flex justify-between items-start">
+<div class="p-2 bg-primary/10 rounded-lg text-primary">
+<span class="material-symbols-outlined">group</span>
+</div>
+<span class="text-emerald-500 text-xs font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">trending_up</span> +12.5%
+                            </span>
+</div>
+<p class="text-slate-500 dark:text-slate-400 text-sm font-medium mt-4">Total Users</p>
+<h3 class="text-2xl font-bold mt-1 group-hover:text-primary transition-colors">12,540</h3>
+</div>
+<div class="bg-white dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 p-6 rounded-xl hover:shadow-lg transition-all group">
+<div class="flex justify-between items-start">
+<div class="p-2 bg-emerald-500/10 rounded-lg text-emerald-500">
+<span class="material-symbols-outlined">description</span>
+</div>
+<span class="text-emerald-500 text-xs font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">trending_up</span> +8.2%
+                            </span>
+</div>
+<p class="text-slate-500 dark:text-slate-400 text-sm font-medium mt-4">Documents Processed</p>
+<h3 class="text-2xl font-bold mt-1 group-hover:text-emerald-500 transition-colors">85,231</h3>
+</div>
+<div class="bg-white dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 p-6 rounded-xl hover:shadow-lg transition-all group">
+<div class="flex justify-between items-start">
+<div class="p-2 bg-orange-500/10 rounded-lg text-orange-500">
+<span class="material-symbols-outlined">token</span>
+</div>
+<span class="text-orange-500 text-xs font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">trending_down</span> -5.1%
+                            </span>
+</div>
+<p class="text-slate-500 dark:text-slate-400 text-sm font-medium mt-4">AI Token Usage</p>
+<h3 class="text-2xl font-bold mt-1 group-hover:text-orange-500 transition-colors">1.2M</h3>
+</div>
+<div class="bg-white dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 p-6 rounded-xl hover:shadow-lg transition-all group">
+<div class="flex justify-between items-start">
+<div class="p-2 bg-purple-500/10 rounded-lg text-purple-500">
+<span class="material-symbols-outlined">subscriptions</span>
+</div>
+<span class="text-emerald-500 text-xs font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">trending_up</span> +3.4%
+                            </span>
+</div>
+<p class="text-slate-500 dark:text-slate-400 text-sm font-medium mt-4">Active Subscriptions</p>
+<h3 class="text-2xl font-bold mt-1 group-hover:text-purple-500 transition-colors">942</h3>
+</div>
+</div>
+<!-- Charts Section -->
+<div class="bg-white dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 rounded-xl p-6">
+<div class="flex items-center justify-between mb-8">
+<div>
+<h3 class="text-lg font-bold">Document Upload Trends</h3>
+<p class="text-sm text-slate-500 dark:text-slate-400">Activity monitoring for the last 30 days</p>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2">
+<span class="size-3 rounded-full bg-primary"></span>
+<span class="text-xs font-medium">New Contracts</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="size-3 rounded-full bg-slate-300 dark:bg-slate-600"></span>
+<span class="text-xs font-medium">Last Month</span>
+</div>
+</div>
+</div>
+<div class="relative h-64 w-full">
+<svg class="w-full h-full" preserveaspectratio="none" viewbox="0 0 1000 200">
+<!-- Grid lines -->
+<line class="text-slate-100 dark:text-slate-800" stroke="currentColor" stroke-width="1" x1="0" x2="1000" y1="0" y2="0"></line>
+<line class="text-slate-100 dark:text-slate-800" stroke="currentColor" stroke-width="1" x1="0" x2="1000" y1="50" y2="50"></line>
+<line class="text-slate-100 dark:text-slate-800" stroke="currentColor" stroke-width="1" x1="0" x2="1000" y1="100" y2="100"></line>
+<line class="text-slate-100 dark:text-slate-800" stroke="currentColor" stroke-width="1" x1="0" x2="1000" y1="150" y2="150"></line>
+<line class="text-slate-100 dark:text-slate-800" stroke="currentColor" stroke-width="1" x1="0" x2="1000" y1="200" y2="200"></line>
+<!-- Area Gradient -->
+<defs>
+<lineargradient id="areaGradient" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#135bec" stop-opacity="0.2"></stop>
+<stop offset="100%" stop-color="#135bec" stop-opacity="0"></stop>
+</lineargradient>
+</defs>
+<!-- Main Path -->
+<path d="M0,160 Q100,140 200,170 T400,100 T600,80 T800,120 T1000,40 L1000,200 L0,200 Z" fill="url(#areaGradient)"></path>
+<path d="M0,160 Q100,140 200,170 T400,100 T600,80 T800,120 T1000,40" fill="none" stroke="#135bec" stroke-linecap="round" stroke-width="3"></path>
+<!-- Comparison Path -->
+<path class="text-slate-300 dark:text-slate-600" d="M0,180 Q100,160 200,185 T400,140 T600,130 T800,150 T1000,110" fill="none" stroke="currentColor" stroke-dasharray="4" stroke-width="2"></path>
+</svg>
+<div class="flex justify-between mt-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest px-2">
+<span>01 Oct</span>
+<span>07 Oct</span>
+<span>14 Oct</span>
+<span>21 Oct</span>
+<span>28 Oct</span>
+<span>Today</span>
+</div>
+</div>
+</div>
+<!-- Recent Activity Table -->
+<div class="bg-white dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden">
+<div class="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+<h3 class="font-bold">Recent User Activity</h3>
+<button class="text-primary text-sm font-semibold hover:underline">View All Logs</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead class="bg-slate-50 dark:bg-slate-900/50">
+<tr>
+<th class="px-6 py-3 text-[11px] font-bold uppercase tracking-wider text-slate-500">User</th>
+<th class="px-6 py-3 text-[11px] font-bold uppercase tracking-wider text-slate-500">Action</th>
+<th class="px-6 py-3 text-[11px] font-bold uppercase tracking-wider text-slate-500">Document Name</th>
+<th class="px-6 py-3 text-[11px] font-bold uppercase tracking-wider text-slate-500">Timestamp</th>
+<th class="px-6 py-3 text-[11px] font-bold uppercase tracking-wider text-slate-500">Status</th>
+<th class="px-6 py-3 text-[11px] font-bold uppercase tracking-wider text-slate-500"></th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="size-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 font-bold text-xs">JD</div>
+<span class="text-sm font-medium">Jane Doe</span>
+</div>
+</td>
+<td class="px-6 py-4 text-sm">Contract Upload</td>
+<td class="px-6 py-4 text-sm text-slate-500 dark:text-slate-400">Employment_Agreement_V2.pdf</td>
+<td class="px-6 py-4 text-sm text-slate-500">2 mins ago</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 rounded-full text-[10px] font-bold bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 uppercase">Analyzed</span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="material-symbols-outlined text-slate-400 group-hover:text-primary transition-colors">visibility</button>
+</td>
+</tr>
+<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="size-8 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center text-amber-600 font-bold text-xs">MK</div>
+<span class="text-sm font-medium">Mark Kaplan</span>
+</div>
+</td>
+<td class="px-6 py-4 text-sm">AI Query</td>
+<td class="px-6 py-4 text-sm text-slate-500 dark:text-slate-400">NDA_Standard_2023.docx</td>
+<td class="px-6 py-4 text-sm text-slate-500">14 mins ago</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 rounded-full text-[10px] font-bold bg-blue-100 dark:bg-blue-900/30 text-blue-600 uppercase">Responded</span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="material-symbols-outlined text-slate-400 group-hover:text-primary transition-colors">visibility</button>
+</td>
+</tr>
+<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="size-8 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-600 font-bold text-xs">SW</div>
+<span class="text-sm font-medium">Sarah Wong</span>
+</div>
+</td>
+<td class="px-6 py-4 text-sm">Bulk Upload</td>
+<td class="px-6 py-4 text-sm text-slate-500 dark:text-slate-400">12 Selected Documents (.zip)</td>
+<td class="px-6 py-4 text-sm text-slate-500">1 hour ago</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 rounded-full text-[10px] font-bold bg-amber-100 dark:bg-amber-900/30 text-amber-600 uppercase">Processing</span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="material-symbols-outlined text-slate-400 group-hover:text-primary transition-colors">visibility</button>
+</td>
+</tr>
+<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="size-8 rounded-full bg-rose-100 dark:bg-rose-900/30 flex items-center justify-center text-rose-600 font-bold text-xs">BT</div>
+<span class="text-sm font-medium">Bill Thompson</span>
+</div>
+</td>
+<td class="px-6 py-4 text-sm">Account Login</td>
+<td class="px-6 py-4 text-sm text-slate-500 dark:text-slate-400">--</td>
+<td class="px-6 py-4 text-sm text-slate-500">3 hours ago</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 rounded-full text-[10px] font-bold bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400 uppercase">Active</span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="material-symbols-outlined text-slate-400 group-hover:text-primary transition-colors">visibility</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="p-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/20 flex items-center justify-between">
+<span class="text-xs text-slate-500">Showing 4 of 1,240 events</span>
+<div class="flex gap-1">
+<button class="size-8 rounded border border-slate-200 dark:border-slate-700 flex items-center justify-center hover:bg-white dark:hover:bg-slate-800 transition-colors">
+<span class="material-symbols-outlined text-lg">chevron_left</span>
+</button>
+<button class="size-8 rounded border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 flex items-center justify-center font-bold text-xs">1</button>
+<button class="size-8 rounded border border-slate-200 dark:border-slate-700 flex items-center justify-center hover:bg-white dark:hover:bg-slate-800 transition-colors font-bold text-xs">2</button>
+<button class="size-8 rounded border border-slate-200 dark:border-slate-700 flex items-center justify-center hover:bg-white dark:hover:bg-slate-800 transition-colors">
+<span class="material-symbols-outlined text-lg">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<footer class="p-8 mt-auto text-center border-t border-slate-200 dark:border-slate-800">
+<p class="text-xs text-slate-500">© 2023 Jolly AI Systems Inc. All rights reserved. Platform v4.2.0-stable</p>
+</footer>
+</main>
+</div>
+</body></html>

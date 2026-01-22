@@ -30,12 +30,21 @@ body {
   padding: 0 20px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: space-between; /* logo on left, profile on right */
+  align-items: center;            /* vertical center */
+  padding: 10px 20px;
 }
 
 .logo {
   font-weight: 600;
   font-size: 16px;
+}
+
+
+.profile {
+  display: flex;
+  align-items: center;  /* align logout + image vertically */
+  gap: 12px;            /* space between button and icon */
 }
 
 .upload-box {

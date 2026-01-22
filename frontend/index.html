@@ -5,13 +5,32 @@
   <meta charset="UTF-8" />
   <title>PDF AI Chat</title>
   <link rel="stylesheet" href="styles.css" />
+  <link href="https://fonts.googleapis.com" rel="stylesheet">
+  <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"> -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+  <!-- <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/> -->
+  <!-- <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/> -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
 </head>
 <body>
 
   <!-- Top Bar -->
   <header class="topbar">
-    <div class="logo">📄 PDF AI Chat</div>
-    <button class="logout-btn" onclick="logout()">Logout</button>
+    <h2 class="text-white text-xl font-bold leading-tight tracking-[-0.015em]"><a href="home.html">Jolly LLB</a></h2>
+      
+    <div class="profile">
+          <button class="logout-btn" onclick="logout()">Logout</button>
+      <a href="profile.html">
+  <img
+    src="profile_icon.png"
+    alt="Profile Icon"
+    style="width:50px;height:50px;"
+  >
+</a>
+
+    </div>
+
   </header>
 
   <!-- Main Chat Area -->
