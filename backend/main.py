@@ -48,7 +48,7 @@ async def upload_pdf(
     x_user_id: int = Header(...)
 ):
     file_path = os.path.join(UPLOAD_DIR, file.filename)
-
+    print("in /upload ")
     with open(file_path, "wb") as f:
         shutil.copyfileobj(file.file, f)
 
@@ -168,10 +168,10 @@ def health():
     return {"status": "ok"}
 
 @app.post("/auth/signup")
-def signup(username: str):
+def signup(username: str, password: str):
     db = SessionLocal()
     try:
-        user = User(username=username)
+        user = User(username=username, password=password)
         db.add(user)
         db.commit()
         db.refresh(user)
@@ -186,13 +186,16 @@ def signup(username: str):
 
 
 @app.post("/auth/login")
-def login(username: str):
+def login(username: str, password: str):
     db = SessionLocal()
     user = db.query(User).filter(User.username == username).first()
     db.close()
 
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
+
+    if user.password != password:
+        raise HTTPException(status_code=401, detail="Invalid password")
 
     return {"user_id": user.id, "username": user.username}
 
