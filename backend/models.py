@@ -10,6 +10,7 @@ class User(Base):
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
     username = Column(Text, unique=True, nullable=False)
+    password = Column(Text, nullable=False)
     created_at = Column(DateTime, server_default=func.now())
 
     conversations = relationship("Conversation", back_populates="user")

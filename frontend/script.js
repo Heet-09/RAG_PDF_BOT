@@ -1,5 +1,5 @@
 // frontend/script.js
-const API = "http://localhost:5555";
+const API = "http://localhost:5557";
 
 const chat = document.getElementById("chatContainer");
 const CURRENT_USER_ID = localStorage.getItem("user_id");
@@ -44,6 +44,7 @@ async function uploadPDF() {
 
   const formData = new FormData();
   formData.append("file", file);
+  console.log("Uploading file:", file);
 
   await fetch(`${API}/upload`, {
     headers: {

@@ -413,3 +413,121 @@ body {
   content: none !important;
 }
 
+/* ===============================
+   AUTH (LOGIN / SIGNUP) PAGES
+================================ */
+
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    radial-gradient(600px at top, rgba(79,70,229,0.15), transparent 60%),
+    var(--bg);
+}
+
+.auth-box {
+  width: 100%;
+  max-width: 420px;
+  background: linear-gradient(
+    180deg,
+    rgba(17,24,39,0.95),
+    rgba(2,6,23,0.95)
+  );
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 36px 34px;
+  box-shadow:
+    0 20px 40px rgba(0,0,0,0.6),
+    inset 0 1px 0 rgba(255,255,255,0.02);
+  animation: fadeUp 0.5s ease;
+}
+
+.auth-box h2 {
+  margin: 0 0 24px;
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.auth-box input {
+  width: 100%;
+  height: 48px;
+  margin-bottom: 14px;
+  padding: 0 14px;
+  font-size: 14px;
+  background: #020617;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  color: var(--text);
+  transition: border 0.2s, box-shadow 0.2s;
+}
+
+.auth-box input::placeholder {
+  color: var(--muted);
+}
+
+.auth-box input:focus {
+  outline: none;
+  border-color: var(--user);
+  box-shadow: 0 0 0 3px rgba(79,70,229,0.25);
+}
+
+.auth-box button {
+  width: 100%;
+  height: 48px;
+  margin-top: 8px;
+  border-radius: 12px;
+  border: none;
+  font-size: 15px;
+  font-weight: 500;
+  color: white;
+  background: linear-gradient(
+    135deg,
+    #4f46e5,
+    #6366f1
+  );
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.auth-box button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(79,70,229,0.35);
+}
+
+.auth-box button:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 10px rgba(79,70,229,0.25);
+}
+
+.auth-box p {
+  margin-top: 18px;
+  font-size: 13px;
+  color: var(--muted);
+  text-align: center;
+}
+
+.auth-box a {
+  color: #8b87ff;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.auth-box a:hover {
+  text-decoration: underline;
+}
+
+/* Entrance animation */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
