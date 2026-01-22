@@ -72,11 +72,10 @@
 
   </footer>
 
-  <script src="script.js"></script>
-  <script>
-  if (!localStorage.getItem("user_id")) {
-    window.location.href = "login.html";
-  }
+  <script src="https://unpkg.com/@auth0/auth0-spa-js@2/dist/auth0-spa-js.production.js"></script>
+  <script src="./auth.js"></script>
+  <script>initAuth();</script>
+
 </script>
 
 </body>

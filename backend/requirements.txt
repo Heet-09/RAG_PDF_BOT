@@ -10,3 +10,4 @@ langchain-chroma
 langchain-text-splitters
 pypdf
 chromadb
+python-jose

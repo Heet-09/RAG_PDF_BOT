@@ -1,15 +1,15 @@
 // frontend/script.js
-const API = "http://localhost:5555";
+const API = "http://localhost:5556";
 
 const chat = document.getElementById("chatContainer");
-const CURRENT_USER_ID = localStorage.getItem("user_id");
-const CURRENT_USERNAME = localStorage.getItem("username");
 let ACTIVE_CONVERSATION_ID = null;
 let ACTIVE_CONVERSATION_PDFS = [];
 
-
-if (!CURRENT_USER_ID) {
-  window.location.href = "login.html";
+async function authHeaders() {
+  const token = await getToken();
+  return {
+    Authorization: `Bearer ${token}`
+  };
 }
 
 function addMessage(text, type) {
@@ -46,9 +46,7 @@ async function uploadPDF() {
   formData.append("file", file);
 
   await fetch(`${API}/upload`, {
-    headers: {
-      "X-User-Id": CURRENT_USER_ID
-    },
+    headers: await authHeaders(),
     method: "POST",
     body: formData
   });
@@ -59,9 +57,7 @@ async function uploadPDF() {
 
 async function loadCollections() {
   const res = await fetch(`${API}/collections`, {
-    headers: {
-      "X-User-Id": CURRENT_USER_ID
-    }
+    headers: await authHeaders()
   });
 
   const data = await res.json();
@@ -102,9 +98,9 @@ async function askQuestion() {
   const response = await fetch(`${API}/ask`, {
     method: "POST",
     headers: {
-      "Content-Type": "application/json",
-      "X-User-Id": CURRENT_USER_ID
-    },
+    ...(await authHeaders()),
+    "Content-Type": "application/json"
+  },
     body: JSON.stringify({
       collections,
       question,
@@ -144,14 +140,14 @@ function logout() {
 
 const activeUserEl = document.getElementById("activeUser");
 
-if (activeUserEl && CURRENT_USERNAME) {
-  activeUserEl.textContent = `Logged in as: ${CURRENT_USERNAME}`;
-}
+// if (activeUserEl && CURRENT_USERNAME) {
+//   activeUserEl.textContent = `Logged in as: ${CURRENT_USERNAME}`;
+// }
 
 
 async function loadConversations() {
   const res = await fetch(`${API}/conversations`, {
-    headers: { "X-User-Id": CURRENT_USER_ID }
+    headers: await authHeaders()
   });
 
   const data = await res.json();
@@ -178,7 +174,8 @@ async function openConversation(conversationId) {
 
   // Find conversation PDFs
   const convoRes = await fetch(`${API}/conversations`, {
-    headers: { "X-User-Id": CURRENT_USER_ID }
+    headers: await authHeaders()
+
   });
   const convos = await convoRes.json();
 
@@ -193,7 +190,8 @@ async function openConversation(conversationId) {
 
   const res = await fetch(
     `${API}/conversations/${conversationId}/messages`,
-    { headers: { "X-User-Id": CURRENT_USER_ID } }
+    { headers: await authHeaders()
+ }
   );
 
   const messages = await res.json();

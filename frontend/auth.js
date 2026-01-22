@@ -1,71 +1,41 @@
-const API = "http://localhost:5555";
+let auth0Client = null;
 
-/* ---------- SIGNUP ---------- */
-async function signup() {
-  const username = document
-    .getElementById("signupUsername")
-    .value
-    .trim();
+const AUTH0_DOMAIN = "";
+const AUTH0_CLIENT_ID = "";
+const AUTH0_AUDIENCE = "https://rag-api"
 
-  if (!username) {
-    alert("Username required");
-    return;
+
+async function initAuth() {
+  auth0Client = await createAuth0Client({
+    domain: AUTH0_DOMAIN,
+    clientId: AUTH0_CLIENT_ID,
+    authorizationParams: {
+      audience: AUTH0_AUDIENCE,
+      redirect_uri: window.location.origin
+    }
+  });
+
+  if (window.location.search.includes("code=")) {
+    await auth0Client.handleRedirectCallback();
+    window.history.replaceState({}, document.title, "/");
   }
 
-  const res = await fetch(
-    `${API}/auth/signup?username=${encodeURIComponent(username)}`,
-    { method: "POST" }
-  );
-
-  if (res.status === 409) {
-    alert("Username already exists");
-    return;
+  const isAuth = await auth0Client.isAuthenticated();
+  if (!isAuth) {
+    await login();
   }
-
-  if (!res.ok) {
-    alert("Signup failed");
-    return;
-  }
-
-  const data = await res.json();
-
-  localStorage.setItem("user_id", data.user_id);
-  localStorage.setItem("username", data.username);
-
-  window.location.href = "index.html";
 }
 
-/* ---------- LOGIN ---------- */
 async function login() {
-  const username = document
-    .getElementById("loginUsername")
-    .value
-    .trim();
+  await auth0Client.loginWithRedirect();
+}
 
-  if (!username) {
-    alert("Username required");
-    return;
-  }
+async function logout() {
+  await auth0Client.logout({
+    logoutParams: { returnTo: window.location.origin }
+  });
+}
 
-  const res = await fetch(
-    `${API}/auth/login?username=${encodeURIComponent(username)}`,
-    { method: "POST" }
-  );
-
-  if (res.status === 404) {
-    alert("User not found. Please sign up.");
-    return;
-  }
-
-  if (!res.ok) {
-    alert("Login failed");
-    return;
-  }
-
-  const data = await res.json();
-
-  localStorage.setItem("user_id", data.user_id);
-  localStorage.setItem("username", data.username);
-
-  window.location.href = "index.html";
+async function getToken() {
+  return await auth0Client.getTokenSilently();
 }

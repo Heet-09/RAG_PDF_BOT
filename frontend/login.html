@@ -2,28 +2,36 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Login | PDF AI Chat</title>
+  <title>Login</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
-<body class="auth-page">
 
+<body class="auth-page">
   <div class="auth-box">
     <h2>Login</h2>
-
-    <input
-      type="text"
-      id="loginUsername"
-      placeholder="Enter your username"
-    />
-
-    <button onclick="login()">Login</button>
-
-    <p>
-      Don’t have an account?
-      <a href="signup.html">Sign up</a>
-    </p>
+    <button id="loginBtn">Login with Auth0</button>
   </div>
 
-  <script src="auth.js"></script>
+  <!-- ✅ Reliable Auth0 SDK -->
+  <script src="https://unpkg.com/@auth0/auth0-spa-js@2/dist/auth0-spa-js.production.js"></script>
+
+  <!-- ✅ Your auth logic -->
+  <script src="./auth.js"></script>
+
+  <script>
+    window.addEventListener("load", async () => {
+      console.log("SDK:", typeof createAuth0Client);
+
+      if (typeof createAuth0Client === "undefined") {
+        alert("Auth0 SDK failed to load");
+        return;
+      }
+
+      await initAuth();
+      document
+        .getElementById("loginBtn")
+        .addEventListener("click", login);
+    });
+  </script>
 </body>
 </html>

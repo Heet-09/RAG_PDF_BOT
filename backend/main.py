@@ -1,5 +1,5 @@
 # backend/main.py
-from fastapi import FastAPI, UploadFile, File, Header
+from fastapi import FastAPI, UploadFile, File, Header, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import StreamingResponse, FileResponse
@@ -11,6 +11,9 @@ from fastapi import Header
 import json
 import shutil
 import os
+from auth import verify_token
+from fastapi import Depends
+
 
 
 from models import UserPDF,Conversation, Message
@@ -45,7 +48,8 @@ app.add_middleware(
 @app.post("/upload")
 async def upload_pdf(
     file: UploadFile = File(...),
-    x_user_id: int = Header(...)
+    user=Depends(verify_token)
+
 ):
     file_path = os.path.join(UPLOAD_DIR, file.filename)
 
@@ -53,14 +57,14 @@ async def upload_pdf(
         shutil.copyfileobj(file.file, f)
 
     collection = collection_name_from_filename(
-        f"{x_user_id}_{file.filename}"
+        f"{user["sub"]}_{file.filename}"
     )
 
     build_collection(file_path, collection)
 
     db = SessionLocal()
     pdf = UserPDF(
-        user_id=x_user_id,
+        user_id=user["sub"],
         collection_name=collection,
         filename=file.filename
     )
@@ -75,12 +79,13 @@ async def upload_pdf(
 
 
 @app.get("/collections")
-def get_collections(x_user_id: int = Header(...)):
+def get_collections(user=Depends(verify_token)
+):
     db = SessionLocal()
 
     pdfs = (
         db.query(UserPDF)
-        .filter(UserPDF.user_id == x_user_id)
+        .filter(UserPDF.user_id == user["sub"])
         .all()
     )
 
@@ -93,7 +98,8 @@ def get_collections(x_user_id: int = Header(...)):
     return result
 
 @app.post("/ask")
-def ask(data: dict, x_user_id: int = Header(...)):
+def ask(data: dict, user=Depends(verify_token)
+):
     
     print("\n🟢 [ASK] Incoming /ask request")
     print(f"📦 [ASK] Raw payload: {data}")
@@ -115,7 +121,7 @@ def ask(data: dict, x_user_id: int = Header(...)):
         conversation_id = int(conversation_id)
     else:
         conversation_id = get_or_create_conversation(
-            user_id=x_user_id,
+            user_id=user["sub"],
             collections=collections
         )
 
@@ -198,13 +204,14 @@ def login(username: str):
 
 
 @app.get("/conversations")
-def list_conversations(x_user_id: int = Header(...)):
+def list_conversations(user=Depends(verify_token)
+):
     db = SessionLocal()
 
     conversations = (
         db.query(Conversation)
         .filter(
-            Conversation.user_id == x_user_id,
+            Conversation.user_id == user["sub"],
             Conversation.is_archived == False
         )
         .order_by(desc(Conversation.created_at))
@@ -227,7 +234,8 @@ def list_conversations(x_user_id: int = Header(...)):
 @app.get("/conversations/{conversation_id}/messages")
 def get_conversation_messages(
     conversation_id: int,
-    x_user_id: int = Header(...)
+    user=Depends(verify_token)
+
 ):
     db = SessionLocal()
 
@@ -235,7 +243,7 @@ def get_conversation_messages(
         db.query(Conversation)
         .filter(
             Conversation.id == conversation_id,
-            Conversation.user_id == x_user_id
+            Conversation.user_id == user["sub"]
         )
         .first()
     )
