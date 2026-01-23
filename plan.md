@@ -1,10 +1,10 @@
 only show the pdf uploaded by the user ✅
 pdf selection ko thoda bada karna hai ✅
 woh three dot dikhana hai ✅
+authoriztion and authentication(normal login) ✅
 google sign in+ auth0
 api limit
-authoriztion and authentication
-frontend acha karna hai
+frontend acha karna hai ✅
 
 
 

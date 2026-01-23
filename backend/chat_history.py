@@ -4,6 +4,7 @@ from models import Conversation, Message
 from langchain_groq import ChatGroq
 from dotenv import load_dotenv
 from sqlalchemy import text
+import os
 
 load_dotenv()
 
@@ -11,6 +12,7 @@ model = ChatGroq(
     model="openai/gpt-oss-120b",
     temperature=0.7,
     max_retries=3,
+    api_key = os.getenv("api_key")
 )
 
 import json

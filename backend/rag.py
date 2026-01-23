@@ -36,6 +36,7 @@ model = ChatGroq(
     model="openai/gpt-oss-120b",
     temperature=0.7,
     max_retries=3,
+    api_key = os.getenv("api_key")
 )
 
 print("🔁 [INIT] Loading reranker model")
