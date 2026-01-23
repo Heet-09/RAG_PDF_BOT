@@ -36,6 +36,7 @@ model = ChatGroq(
     model="openai/gpt-oss-120b",
     temperature=0.7,
     max_retries=3,
+    api_key = os.getenv("api_key")
 )
 
 print("🔁 [INIT] Loading reranker model")
@@ -89,6 +90,7 @@ def save_mapping(mapping):
 import re
 
 def collection_name_from_filename(filename):
+    print("collection from filname")
     name = os.path.splitext(filename)[0].lower()
 
     # Replace spaces with underscore
