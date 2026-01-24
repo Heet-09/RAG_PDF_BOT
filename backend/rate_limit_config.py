@@ -3,8 +3,8 @@ RATE_LIMITS = {
     "/auth/login": {"limit": 5, "window": 60},
     "/auth/signup": {"limit": 3, "window": 60},
 
-    "/ask": {"limit": 1, "window": 3600},
-    "/upload": {"limit": 5, "window": 3600},
+    "/ask": {"limit": 10, "window": 60},
+    "/upload": {"limit": 5, "window": 50},
 
     "default": {"limit": 60, "window": 60},
 }
