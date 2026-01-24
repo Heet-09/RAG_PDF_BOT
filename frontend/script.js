@@ -42,14 +42,28 @@ function showToast(message, type = "warn", timeout = 4000) {
 
   const toast = document.createElement("div");
   toast.className = `toast ${type}`;
-  toast.textContent = message;
+  
+  // Add close button
+  const closeBtn = document.createElement("button");
+  closeBtn.className = "toast-close";
+  closeBtn.textContent = "✕";
+  closeBtn.onclick = () => {
+    toast.style.opacity = "0";
+    toast.style.transform = "translateY(10px)";
+    setTimeout(() => toast.remove(), 300);
+  };
+
+  toast.innerHTML = `<span>${message}</span>`;
+  toast.appendChild(closeBtn);
 
   container.appendChild(toast);
 
   setTimeout(() => {
-    toast.style.opacity = "0";
-    toast.style.transform = "translateY(10px)";
-    setTimeout(() => toast.remove(), 300);
+    if (toast.parentNode) {
+      toast.style.opacity = "0";
+      toast.style.transform = "translateY(10px)";
+      setTimeout(() => toast.remove(), 300);
+    }
   }, timeout);
 }
 
