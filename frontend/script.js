@@ -1,5 +1,5 @@
 // frontend/script.js
-const API = "http://localhost:5558";
+const API = "http://127.0.0.1:5558";
 
 const chat = document.getElementById("chatContainer");
 const CURRENT_USER_ID = localStorage.getItem("user_id");
@@ -151,6 +151,7 @@ async function askQuestion() {
 
   // 🚨 HANDLE RATE LIMIT
   if (response.status === 429) {
+    console.log("Handling 429");
     chat.removeChild(typingMsg);
     await handle429(response);
     return;

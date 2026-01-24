@@ -28,10 +28,6 @@ MAPPING_FILE = "collections.json"
 os.makedirs(DB_PATH, exist_ok=True)
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
-print("🚀 [INIT] RAG system starting")
-print(f"📂 [INIT] DB_PATH: {DB_PATH}")
-print(f"📂 [INIT] UPLOAD_DIR: {UPLOAD_DIR}")
-
 model = ChatGroq(
     model="openai/gpt-oss-120b",
     temperature=0.7,
@@ -39,7 +35,6 @@ model = ChatGroq(
     api_key = os.getenv("api_key")
 )
 
-print("🔁 [INIT] Loading reranker model")
 reranker = CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2")
 
 
@@ -55,42 +50,31 @@ If the answer requires interpretation, explain it using ONLY the provided clause
 
 """
 
-print("🤖 [INIT] Groq LLM initialized")
-
 def get_embeddings():
-    print("🔢 [EMBEDDINGS] Loading HuggingFace embeddings")
     return HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
 
 def load_mapping():
     if not os.path.exists(MAPPING_FILE):
-        print("⚠️ [MAPPING] collections.json not found, returning empty mapping")
         return {}
 
     try:
         with open(MAPPING_FILE, "r") as f:
             content = f.read().strip()
             if not content:
-                print("⚠️ [MAPPING] collections.json is empty, returning empty mapping")
                 return {}
             mapping = json.loads(content)
     except json.JSONDecodeError as e:
-        print(f"❌ [MAPPING] Invalid JSON in collections.json: {e}")
-        print("⚠️ [MAPPING] Returning empty mapping")
         return {}
 
-    print(f"🗂️ [MAPPING] Loaded {len(mapping)} collections")
     return mapping
 
 def save_mapping(mapping):
     with open(MAPPING_FILE, "w") as f:
         json.dump(mapping, f, indent=2)
 
-    print("💾 [MAPPING] collections.json saved")
-
 import re
 
 def collection_name_from_filename(filename):
-    print("collection from filname")
     name = os.path.splitext(filename)[0].lower()
 
     # Replace spaces with underscore
@@ -107,15 +91,11 @@ def collection_name_from_filename(filename):
     if len(name) < 3:
         name = f"doc_{name}"
 
-    print(f"🔤 [COLLECTION] Derived collection name: {name}")
     return name
 
 def build_collection(file_path, collection_name):
-    print(f"📦 [CHROMA] Building collection: {collection_name}")
-
     loader = PDFPlumberLoader(file_path)
     pages = loader.load()
-    print(f"📄 Loaded {len(pages)} pages")
 
     embeddings = get_embeddings()
 
@@ -144,7 +124,6 @@ def build_collection(file_path, collection_name):
     
 
     chunks = splitter.split_documents(pages)
-    print(f"✂️ Created {len(chunks)} semantic legal chunks")
 
     db = Chroma(
         persist_directory=DB_PATH,
@@ -153,11 +132,8 @@ def build_collection(file_path, collection_name):
     )
 
     db.add_documents(chunks)
-    print("✅ Legal document indexed successfully")
 
 def load_collection(collection_name):
-    print(f"📂 [CHROMA] Loading collection: {collection_name}")
-
     return Chroma(
         persist_directory=DB_PATH,
         collection_name=collection_name,
@@ -271,7 +247,4 @@ def rerank(query, docs, top_n=5):
 
 
 def debug_print_chunks(label, docs):
-    print(f"\n🧩 [{label}] Retrieved {len(docs)} chunks")
-    for i, d in enumerate(docs, 1):
-        print(f"\n--- Chunk {i} ---")
-        print(d.page_content[:800])  # prevent log spam
+    pass

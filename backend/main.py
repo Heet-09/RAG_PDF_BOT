@@ -1,5 +1,5 @@
 # backend/main.py
-from fastapi import FastAPI, UploadFile, File, Header
+from fastapi import FastAPI, UploadFile, File, Header, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import StreamingResponse, FileResponse
@@ -52,7 +52,6 @@ async def upload_pdf(
     x_user_id: int = Header(...)
 ):
     file_path = os.path.join(UPLOAD_DIR, file.filename)
-    print("in /upload ")
     with open(file_path, "wb") as f:
         shutil.copyfileobj(file.file, f)
 
@@ -105,11 +104,7 @@ def ask(data: dict, x_user_id: int = Header(...)):
     collections = data.get("collections")
     question = data.get("question")
 
-    print(f"📄 [ASK] Collections received: {collections}")
-    print(f"❓ [ASK] Question received: {question}")
-
     if not isinstance(collections, list) or len(collections) > 3:
-        print("❌ [ASK] Invalid collections input")
         return {"error": "Select up to 3 PDFs only"}
 
     # Conversation
@@ -123,21 +118,15 @@ def ask(data: dict, x_user_id: int = Header(...)):
             collections=collections
         )
 
-    print(f"🆔 [ASK] Conversation ID: {conversation_id}")
-
     # Save user message
     save_message(conversation_id, "user", question)
-    print("💾 [ASK] User message saved")
 
     def stream():
         full_answer = ""
 
-        print("📜 [STREAM] Fetching conversation history")
         history = get_langchain_messages(conversation_id)
-        print(f"📜 [STREAM] History length: {len(history)}")
 
         try:
-            print("🚀 [STREAM] Starting RAG streaming")
             for chunk in ask_question_stream(
                 collections,
                 question,
@@ -145,34 +134,26 @@ def ask(data: dict, x_user_id: int = Header(...)):
                 conversation_id
             ):
                 full_answer += chunk
-                print(f"🔹 [STREAM] Chunk received ({len(chunk)} chars)")
                 yield chunk
 
         except Exception as e:
-            print("🔥 [STREAM] Exception occurred during streaming")
-            print(e)
             raise
 
         finally:
-            print("🛑 [STREAM] Streaming finished")
-
             if full_answer.strip():
-                print(f"💾 [STREAM] Saving assistant answer ({len(full_answer)} chars)")
                 save_message(conversation_id, "assistant", full_answer)
-
-                print("🧠 [STREAM] Updating conversation summary (if needed)")
                 maybe_update_summary(conversation_id)
-            else:
-                print("⚠️ [STREAM] No answer generated, skipping save")
 
     return StreamingResponse(stream(), media_type="text/plain")
 
 @app.get("/api/health")
-def health():
+def health(request: Request = None):
+    print(f"[ENDPOINT] Full URL: {request.url}")
     return {"status": "ok"}
 
 @app.post("/auth/signup")
-def signup(username: str, password: str):
+def signup(username: str, password: str, request: Request = None):
+    print(f"[ENDPOINT] Full URL: {request.url}")
     db = SessionLocal()
     try:
         user = User(username=username, password=password)
@@ -190,7 +171,8 @@ def signup(username: str, password: str):
 
 
 @app.post("/auth/login")
-def login(username: str, password: str):
+def login(username: str, password: str, request: Request = None):
+    print(f"[ENDPOINT] Full URL: {request.url}")
     db = SessionLocal()
     user = db.query(User).filter(User.username == username).first()
     db.close()
@@ -205,7 +187,8 @@ def login(username: str, password: str):
 
 
 @app.get("/conversations")
-def list_conversations(x_user_id: int = Header(...)):
+def list_conversations(x_user_id: int = Header(...), request: Request = None):
+    print(f"[ENDPOINT] Full URL: {request.url}")
     db = SessionLocal()
 
     conversations = (
@@ -234,8 +217,10 @@ def list_conversations(x_user_id: int = Header(...)):
 @app.get("/conversations/{conversation_id}/messages")
 def get_conversation_messages(
     conversation_id: int,
-    x_user_id: int = Header(...)
+    x_user_id: int = Header(...),
+    request: Request = None
 ):
+    print(f"[ENDPOINT] Full URL: {request.url}")
     db = SessionLocal()
 
     convo = (
@@ -272,12 +257,7 @@ def get_conversation_messages(
 
 # Serve frontend static files
 FRONTEND_DIR = os.path.join(os.path.dirname(__file__), "..", "frontend")
-print(f"🌐 [INIT] Frontend directory: {FRONTEND_DIR}")
-print(f"🌐 [INIT] Frontend exists: {os.path.exists(FRONTEND_DIR)}")
 if os.path.exists(FRONTEND_DIR):
-    print(f"🌐 [INIT] Mounting frontend static files")
     app.mount("/", StaticFiles(directory=FRONTEND_DIR, html=True), name="static")
-else:
-    print(f"❌ [INIT] Frontend directory not found!")
 
 

@@ -3,7 +3,6 @@ from fastapi import Request
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 
-from redis_client import redis_client
 from rate_limit_config import RATE_LIMITS
 from middleware.fallback_limiter import fallback_rate_limit
 
