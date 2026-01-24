@@ -5,6 +5,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import StreamingResponse, FileResponse
 from fastapi import HTTPException
 from models import User
+from middleware.rate_limit import RateLimitMiddleware
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy import desc
 from fastapi import Header
@@ -40,6 +41,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Rate limit middleware
+app.add_middleware(RateLimitMiddleware)
 
 
 @app.post("/upload")
