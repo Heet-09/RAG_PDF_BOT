@@ -1,5 +1,5 @@
 // frontend/script.js
-const API = "http://localhost:5557";
+const API = "http://localhost:5558";
 
 const chat = document.getElementById("chatContainer");
 const CURRENT_USER_ID = localStorage.getItem("user_id");
@@ -36,6 +36,37 @@ function addTypingIndicator() {
   return msg;
 }
 
+function showToast(message, type = "warn", timeout = 4000) {
+  const container = document.getElementById("toastContainer");
+  if (!container) return;
+
+  const toast = document.createElement("div");
+  toast.className = `toast ${type}`;
+  toast.textContent = message;
+
+  container.appendChild(toast);
+
+  setTimeout(() => {
+    toast.style.opacity = "0";
+    toast.style.transform = "translateY(10px)";
+    setTimeout(() => toast.remove(), 300);
+  }, timeout);
+}
+
+async function handle429(response) {
+  const retryAfter =
+    response.headers.get("Retry-After") || "?";
+
+  showToast(
+    `⏳ Too many requests. Try again in ${retryAfter}s`,
+    "warn",
+    5000
+  );
+
+  return Number(retryAfter);
+}
+
+
 async function uploadPDF() {
   const file = document.getElementById("pdfUpload").files[0];
   if (!file) return;
@@ -46,13 +77,18 @@ async function uploadPDF() {
   formData.append("file", file);
   console.log("Uploading file:", file);
 
-  await fetch(`${API}/upload`, {
+  const res = await fetch(`${API}/upload`, {
     headers: {
       "X-User-Id": CURRENT_USER_ID
     },
     method: "POST",
     body: formData
   });
+
+  if (res.status === 429) {
+    await handle429(res);
+    return;
+  }
 
   await loadCollections();
   addMessage("PDF indexed successfully ✅", "assistant");
@@ -113,7 +149,21 @@ async function askQuestion() {
     })
   });
 
-  //  Prepare streaming
+  // 🚨 HANDLE RATE LIMIT
+  if (response.status === 429) {
+    chat.removeChild(typingMsg);
+    await handle429(response);
+    return;
+  }
+
+  // 🚨 HANDLE OTHER ERRORS
+  if (!response.ok) {
+    chat.removeChild(typingMsg);
+    alert("❌ Failed to get response.");
+    return;
+  }
+
+  // ✅ SAFE TO STREAM
   const reader = response.body.getReader();
   const decoder = new TextDecoder();
   let firstChunk = true;

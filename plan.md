@@ -3,10 +3,11 @@ pdf selection ko thoda bada karna hai ✅
 woh three dot dikhana hai ✅
 authoriztion and authentication(normal login) ✅
 google sign in+ auth0
-api limit
+api limit ✅
 frontend acha karna hai ✅
-
-
+fast karna hai response (can only deb done by instatling redis)
+premium user
+sqlalchemy error 
 
 
 🎯 FINAL 

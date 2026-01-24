@@ -1,4 +1,4 @@
-const API = "http://localhost:5557";
+const API = "http://localhost:5558";
 
 /* ---------- SIGNUP ---------- */
 async function signup() {
@@ -69,6 +69,11 @@ async function login() {
     `${API}/auth/login?username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`,
     { method: "POST" }
   );
+
+  if (res.status === 429) {
+    await handle429(res);
+    return;
+  }
 
   if (res.status === 404) {
     alert("User not found. Please sign up.");
