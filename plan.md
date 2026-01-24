@@ -7,7 +7,7 @@ api limit ✅
 frontend acha karna hai ✅
 fast karna hai response (can only deb done by instatling redis)
 premium user
-sqlalchemy error 
+sqlalchemy error ✅
 
 
 🎯 FINAL 
