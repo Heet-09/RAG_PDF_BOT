@@ -1,4 +1,4 @@
-const API = "http://localhost:5557";
+const API = "http://localhost:5558";
 
 /* ---------- SIGNUP ---------- */
 async function signup() {
