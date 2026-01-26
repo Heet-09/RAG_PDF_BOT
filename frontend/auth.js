@@ -90,5 +90,5 @@ async function login() {
   localStorage.setItem("user_id", data.user_id);
   localStorage.setItem("username", data.username);
 
-  window.location.href = "index.html";
+  window.location.href = "home.html";
 }

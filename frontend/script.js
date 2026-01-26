@@ -3,7 +3,7 @@ const API = "http://localhost:5558";
 
 const chat = document.getElementById("chatContainer");
 const CURRENT_USER_ID = localStorage.getItem("user_id");
-const CURRENT_USERNAME = localStorage.getItem("username");
+const CURRENT_USERNAME = localStoragecmd.getItem("username");
 let ACTIVE_CONVERSATION_ID = null;
 let ACTIVE_CONVERSATION_PDFS = [];
 
