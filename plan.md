@@ -2,9 +2,20 @@ only show the pdf uploaded by the user ✅
 pdf selection ko thoda bada karna hai ✅
 woh three dot dikhana hai ✅
 authoriztion and authentication(normal login) ✅
-google sign in+ auth0
-api limit
+api limit ✅
 frontend acha karna hai ✅
+google sign in+ auth0
+Streaming abort
+Pagination for messages
+Background indexing
+
+RAG GOALS
+| Level         | Techniques              | Accuracy | Complexity |
+| ------------- | ----------------------- | -------- | ---------- |
+| L1 Basic      | Semantic                | 75%      | Easy       |✅
+| L2 Production | Hybrid + Rerank         | 92%      | Medium     |✅
+| L3 Enterprise | Multi-Vector + GraphRAG | 97%      | Hard       |
+| L4 SOTA       | ColPali + Recursive     | 99%      | Expert     |
 
 
 
@@ -18,27 +29,4 @@ You have:
 📄 Chats linked to PDFs ✅
 🔁 Resume old chats ✅
 ⚡ Streaming responses  ✅
-🔐 Auth + sessions
-
-🔵 PHASE 7 — SCALE & PRODUCTION HARDENING
-Later (optional but important):
-Rate limiting
-Streaming abort
-Pagination for messages
-Background indexing
-Admin dashboard
-
-🧠 TECH STACK
-Backend
-   FastAPI
-   SQLAlchemy
-   JWT Auth
-   Chroma (vector DB)
-   LangChain + Groq
-
-Frontend
-   Current HTML/JS (OK for now)
-   Later: React / Next.js
-
-Database
-   MYSQL
+🔐 Auth + sessions ✅
