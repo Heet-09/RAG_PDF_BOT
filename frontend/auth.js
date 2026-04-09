@@ -1,4 +1,4 @@
-const API = "http://localhost:5557";
+const API = "http://localhost:5558";
 
 /* ---------- SIGNUP ---------- */
 async function signup() {
@@ -40,8 +40,8 @@ async function signup() {
 
   localStorage.setItem("user_id", data.user_id);
   localStorage.setItem("username", data.username);
-
-  window.location.href = "index.html";
+  console.log("Signed in as:", data.username);
+  window.location.href = "login.html";
 }
 
 /* ---------- LOGIN ---------- */
@@ -89,6 +89,7 @@ async function login() {
 
   localStorage.setItem("user_id", data.user_id);
   localStorage.setItem("username", data.username);
+  console.log("Logged in as:", data.username);
 
-  window.location.href = "index.html";
+  window.location.href = "home.html";
 }
