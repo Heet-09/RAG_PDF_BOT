@@ -1,0 +1,22 @@
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - aws ecr get-login-password --region eu-north-1 | docker login --username AWS --password-stdin 049323678839.dkr.ecr.eu-north-1.amazonaws.com
+      - IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c1-7)
+
+  build:
+    commands:
+      - docker build -t 049323678839.dkr.ecr.eu-north-1.amazonaws.com/rag-api:$IMAGE_TAG .
+      - docker tag 049323678839.dkr.ecr.eu-north-1.amazonaws.com/rag-api:$IMAGE_TAG 049323678839.dkr.ecr.eu-north-1.amazonaws.com/rag-api:latest
+
+  post_build:
+    commands:
+      - docker push 049323678839.dkr.ecr.eu-north-1.amazonaws.com/rag-api:$IMAGE_TAG
+      - docker push 049323678839.dkr.ecr.eu-north-1.amazonaws.com/rag-api:latest
+      - printf '[{"name":"rag-api","imageUri":"%s"}]' 049323678839.dkr.ecr.eu-north-1.amazonaws.com/rag-api:$IMAGE_TAG > imagedefinitions.json
+
+artifacts:
+  files:
+    - imagedefinitions.json
