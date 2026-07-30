@@ -16,7 +16,14 @@ from langchain_core.messages import (
 from langchain_community.retrievers import BM25Retriever
 from sentence_transformers import CrossEncoder
 from langchain_core.documents import Document
+import chromadb
 
+
+CHROMA_HOST = os.getenv("CHROMA_HOST", "localhost")
+CHROMA_PORT = int(os.getenv("CHROMA_PORT", 8000))
+
+print(f"🔌 [INIT] Connecting to Chroma at {CHROMA_HOST}:{CHROMA_PORT}")
+chroma_client = chromadb.HttpClient(host=CHROMA_HOST, port=CHROMA_PORT)
 
 
 load_dotenv()
@@ -147,7 +154,7 @@ def build_collection(file_path, collection_name):
     print(f"✂️ Created {len(chunks)} semantic legal chunks")
 
     db = Chroma(
-        persist_directory=DB_PATH,
+        client=chroma_client,
         collection_name=collection_name,
         embedding_function=embeddings,
     )
@@ -159,7 +166,7 @@ def load_collection(collection_name):
     print(f"📂 [CHROMA] Loading collection: {collection_name}")
 
     return Chroma(
-        persist_directory=DB_PATH,
+        client=chroma_client,
         collection_name=collection_name,
         embedding_function=get_embeddings(),
     )
