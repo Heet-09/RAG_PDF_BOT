@@ -9,6 +9,7 @@ langchain
 langchain-community
 langchain-groq
 langchain-huggingface
+langchain-chroma
 chromadb
 langchain-text-splitters
 pypdf
