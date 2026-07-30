@@ -8,7 +8,6 @@ from langchain_community.document_loaders import PDFPlumberLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_groq import ChatGroq
 from langchain_core.messages import SystemMessage
-from langchain_experimental.text_splitter import SemanticChunker
 from chat_history import get_summary
 from langchain_core.messages import (
     SystemMessage, HumanMessage, AIMessage
