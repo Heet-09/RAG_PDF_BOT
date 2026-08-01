@@ -1,5 +1,5 @@
 // frontend/script.js
-const API = "http://localhost:5557";
+const API = "";
 
 const chat = document.getElementById("chatContainer");
 const CURRENT_USER_ID = localStorage.getItem("user_id");
