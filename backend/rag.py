@@ -8,7 +8,6 @@ from langchain_community.document_loaders import PDFPlumberLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_groq import ChatGroq
 from langchain_core.messages import SystemMessage
-from langchain_experimental.text_splitter import SemanticChunker
 from chat_history import get_summary
 from langchain_core.messages import (
     SystemMessage, HumanMessage, AIMessage
@@ -147,6 +146,7 @@ def build_collection(file_path, collection_name):
     print(f"✂️ Created {len(chunks)} semantic legal chunks")
 
     db = Chroma(
+        client=chroma_client,
         collection_name=collection_name,
         embedding_function=embeddings,
         persist_directory=CHROMA_DIR,
@@ -171,6 +171,7 @@ def load_collection(collection_name):
     print(f"📂 [CHROMA] Loading collection: {collection_name}")
 
     return Chroma(
+        client=chroma_client,
         collection_name=collection_name,
         embedding_function=get_embeddings(),
         persist_directory=CHROMA_DIR,
