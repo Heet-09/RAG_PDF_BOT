@@ -3,7 +3,7 @@ import os
 import json
 from dotenv import load_dotenv
 from langchain_huggingface import HuggingFaceEmbeddings
-from langchain_chroma import Chroma
+from langchain_community.vectorstores import Chroma
 from langchain_community.document_loaders import PDFPlumberLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_groq import ChatGroq
@@ -19,17 +19,17 @@ from langchain_core.documents import Document
 
 
 
-load_dotenv()
+load_dotenv(os.path.join(os.path.dirname(__file__), "..", ".env"))
 
-DB_PATH = "chroma_db"
 UPLOAD_DIR = "uploads"
 MAPPING_FILE = "collections.json"
+CHROMA_DIR = os.path.join(os.path.dirname(__file__), "chroma_db")
 
-os.makedirs(DB_PATH, exist_ok=True)
 os.makedirs(UPLOAD_DIR, exist_ok=True)
+os.makedirs(CHROMA_DIR, exist_ok=True)
 
 print("🚀 [INIT] RAG system starting")
-print(f"📂 [INIT] DB_PATH: {DB_PATH}")
+print(f"📂 [INIT] CHROMA_DIR: {CHROMA_DIR}")
 print(f"📂 [INIT] UPLOAD_DIR: {UPLOAD_DIR}")
 
 model = ChatGroq(
@@ -147,22 +147,50 @@ def build_collection(file_path, collection_name):
     print(f"✂️ Created {len(chunks)} semantic legal chunks")
 
     db = Chroma(
-        persist_directory=DB_PATH,
         collection_name=collection_name,
         embedding_function=embeddings,
+        persist_directory=CHROMA_DIR,
     )
 
+    # Re-upload should replace existing vectors for the same collection.
+    try:
+        db.delete_collection()
+        db = Chroma(
+            collection_name=collection_name,
+            embedding_function=embeddings,
+            persist_directory=CHROMA_DIR,
+        )
+    except Exception:
+        pass
+
     db.add_documents(chunks)
+    db.persist()
     print("✅ Legal document indexed successfully")
 
 def load_collection(collection_name):
     print(f"📂 [CHROMA] Loading collection: {collection_name}")
 
     return Chroma(
-        persist_directory=DB_PATH,
         collection_name=collection_name,
         embedding_function=get_embeddings(),
+        persist_directory=CHROMA_DIR,
     )
+
+
+def scroll_all_documents(db):
+    """Fetch all chunk texts from a Chroma collection (for BM25)."""
+    documents = []
+    data = db.get(include=["documents", "metadatas"])
+    texts = data.get("documents") or []
+    metadatas = data.get("metadatas") or []
+
+    for i, text in enumerate(texts):
+        if not text:
+            continue
+        metadata = metadatas[i] if i < len(metadatas) and metadatas[i] else {}
+        documents.append(Document(page_content=text, metadata=metadata))
+
+    return documents
 
 
 
@@ -232,17 +260,13 @@ def hybrid_retrieve(db, query, k_dense=6, k_sparse=6):
     # Dense retrieval
     dense_docs = db.similarity_search(query, k=k_dense)
 
-    # Get all docs from Chroma
-    all_docs = db.get(include=["documents", "metadatas"])
-    documents = [
-        Document(page_content=doc, metadata=meta)
-        for doc, meta in zip(all_docs["documents"], all_docs["metadatas"])
-    ]
-
-    # Sparse retrieval (BM25)
-    bm25 = BM25Retriever.from_documents(documents)
-    bm25.k = k_sparse
-    sparse_docs = bm25.invoke(query)  # ✅ FIXED
+    # Sparse retrieval (BM25) — needs all chunk texts from Chroma
+    all_docs = scroll_all_documents(db)
+    sparse_docs = []
+    if all_docs:
+        bm25 = BM25Retriever.from_documents(all_docs)
+        bm25.k = k_sparse
+        sparse_docs = bm25.invoke(query)
 
     # Merge + deduplicate
     docs = dense_docs + sparse_docs
