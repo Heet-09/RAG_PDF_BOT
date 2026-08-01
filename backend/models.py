@@ -1,6 +1,6 @@
 #bakcned/models.py
 from db import Base
-from sqlalchemy import Column, BigInteger, Text, Enum, DateTime, ForeignKey,Boolean
+from sqlalchemy import Column, BigInteger, String, Text, Enum, DateTime, ForeignKey,Boolean
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
@@ -9,7 +9,7 @@ class User(Base):
     __tablename__ = "users"
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
-    username = Column(Text, unique=True, nullable=False)
+    username = Column(String(255), unique=True, nullable=False)
     password = Column(Text, nullable=False)
     created_at = Column(DateTime, server_default=func.now())
 
