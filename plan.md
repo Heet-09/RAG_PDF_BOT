@@ -27,6 +27,7 @@ Streaming abort
 Pagination for messages
 Background indexing
 Admin dashboard
+Alembic migrations for DB schema (no migration path currently — create_all() only creates missing tables, doesn't alter existing ones)
 
 🧠 TECH STACK
 Backend

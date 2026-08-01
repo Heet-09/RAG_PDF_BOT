@@ -161,7 +161,11 @@ def ask(data: dict, x_user_id: int = Header(...)):
             else:
                 print("⚠️ [STREAM] No answer generated, skipping save")
 
-    return StreamingResponse(stream(), media_type="text/plain")
+    return StreamingResponse(
+        stream(),
+        media_type="text/plain",
+        headers={"X-Conversation-Id": str(conversation_id)}
+    )
 
 @app.get("/api/health")
 def health():

@@ -90,11 +90,11 @@ def get_summary(conversation_id):
 def save_summary(conversation_id, summary):
     db = SessionLocal()
     db.execute(
-        """
+        text("""
         INSERT INTO conversation_summaries (conversation_id, summary)
         VALUES (:id, :summary)
         ON DUPLICATE KEY UPDATE summary=:summary
-        """,
+        """),
         {"id": conversation_id, "summary": summary}
     )
     db.commit()

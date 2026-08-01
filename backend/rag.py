@@ -1,6 +1,7 @@
 # backend/rag.py
 import os
 import json
+import chromadb
 from dotenv import load_dotenv
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import Chroma
@@ -26,6 +27,16 @@ CHROMA_DIR = os.path.join(os.path.dirname(__file__), "chroma_db")
 
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 os.makedirs(CHROMA_DIR, exist_ok=True)
+
+CHROMA_HOST = os.getenv("CHROMA_HOST")
+CHROMA_PORT = os.getenv("CHROMA_PORT")
+
+if CHROMA_HOST and CHROMA_PORT:
+    chroma_client = chromadb.HttpClient(host=CHROMA_HOST, port=int(CHROMA_PORT))
+    print(f"🔌 [CHROMA] Connected to remote Chroma at {CHROMA_HOST}:{CHROMA_PORT}")
+else:
+    chroma_client = None
+    print(f"📂 [CHROMA] CHROMA_HOST/CHROMA_PORT not set, using local persistent storage at {CHROMA_DIR}")
 
 print("🚀 [INIT] RAG system starting")
 print(f"📂 [INIT] CHROMA_DIR: {CHROMA_DIR}")

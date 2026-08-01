@@ -52,6 +52,18 @@ class Message(Base):
 
     conversation = relationship("Conversation", back_populates="messages")
 
+class ConversationSummary(Base):
+    __tablename__ = "conversation_summaries"
+
+    conversation_id = Column(
+        BigInteger,
+        ForeignKey("conversations.id"),
+        primary_key=True
+    )
+    summary = Column(Text, nullable=False)
+    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
+
+
 class UserPDF(Base):
     __tablename__ = "user_pdfs"
 

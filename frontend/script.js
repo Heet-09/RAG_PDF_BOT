@@ -113,6 +113,13 @@ async function askQuestion() {
     })
   });
 
+  const isNewConversation = !ACTIVE_CONVERSATION_ID;
+  const conversationIdHeader = response.headers.get("X-Conversation-Id");
+  if (conversationIdHeader) {
+    ACTIVE_CONVERSATION_ID = parseInt(conversationIdHeader, 10);
+    ACTIVE_CONVERSATION_PDFS = collections;
+  }
+
   //  Prepare streaming
   const reader = response.body.getReader();
   const decoder = new TextDecoder();
@@ -132,6 +139,10 @@ async function askQuestion() {
 
     typingMsg.textContent += decoder.decode(value);
     chat.scrollTop = chat.scrollHeight;
+  }
+
+  if (isNewConversation) {
+    await loadConversations();
   }
 }
 
