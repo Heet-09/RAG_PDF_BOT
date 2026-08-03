@@ -156,6 +156,9 @@ def build_collection(file_path, collection_name):
     chunks = splitter.split_documents(pages)
     print(f"✂️ Created {len(chunks)} semantic legal chunks")
 
+    if not chunks:
+        raise ValueError(f"No chunks produced from {file_path}; nothing to index")
+
     db = Chroma(
         client=chroma_client,
         collection_name=collection_name,
@@ -166,17 +169,28 @@ def build_collection(file_path, collection_name):
     # Re-upload should replace existing vectors for the same collection.
     try:
         db.delete_collection()
-        db = Chroma(
-            collection_name=collection_name,
-            embedding_function=embeddings,
-            persist_directory=CHROMA_DIR,
-        )
     except Exception:
         pass
 
+    # Recreate against the SAME client (remote or local) — dropping
+    # client=chroma_client here would silently fall back to a local
+    # PersistentClient, so writes and reads end up in different stores.
+    db = Chroma(
+        client=chroma_client,
+        collection_name=collection_name,
+        embedding_function=embeddings,
+        persist_directory=CHROMA_DIR,
+    )
+
     db.add_documents(chunks)
-    db.persist()
-    print("✅ Legal document indexed successfully")
+
+    count = db._collection.count()
+    if count == 0:
+        raise RuntimeError(
+            f"Indexing '{collection_name}' failed: collection.count() is 0 after add_documents()"
+        )
+
+    print(f"✅ Legal document indexed successfully ({count} vectors in '{collection_name}')")
 
 def load_collection(collection_name):
     print(f"📂 [CHROMA] Loading collection: {collection_name}")
